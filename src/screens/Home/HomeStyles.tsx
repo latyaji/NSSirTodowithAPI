@@ -88,4 +88,14 @@ export const styles = StyleSheet.create({
       fontSize: 16,
       marginTop: 10,
     },
+    deleteIcon:{
+      width:scale(20),
+      height:verticalScale(20),
+      resizeMode:"contain"
+    },
+    dailyTaskView:{
+      flexDirection:"row",
+      justifyContent:"space-between",
+      padding:verticalScale(20)
+    }
   });

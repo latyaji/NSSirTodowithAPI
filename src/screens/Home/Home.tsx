@@ -27,6 +27,7 @@ import {
 import {Colors} from '../../utils/Colors/Color';
 import {globalStyles} from '../../utils/GlobalStyle/GlobalStyles';
 import {
+  deleteIcon,
   logoutImg,
   plusicon,
   profileicon,
@@ -35,6 +36,7 @@ import {
 import {Static} from '../../utils/StaticFonts/StaticFonts';
 import {styles} from './HomeStyles';
 import {sorting_generic} from '../../GlobalFunction/ValidationFunction';
+import {verticalScale} from 'react-native-size-matters';
 interface S {
   addTasks: string;
 }
@@ -67,6 +69,17 @@ const Home: React.FC<S> = () => {
 
   const TodoSubmit = async () => {
     try {
+//      const newTodoData= todoData.map((item: any) => {
+//         if (item.id === addTasks.id) {
+//           return addTasks;
+//         } else {
+//           return item;
+//         }
+//       });
+//       dispatch(setodoData(newTodoData));
+// dispatch(setModal(!showModal));
+//       console.log('------>', newTodoData);
+//       return;
       const response = await publicinstance.post('todo/createTodo', {
         title: addTasks,
       });
@@ -130,6 +143,11 @@ const Home: React.FC<S> = () => {
       });
   };
   const addTask = (text: any) => {
+    // console.log(text, '---->');
+    // let newData = {
+    //   ...addTasks,
+    //   title: text,
+    // };
     dispatch(setAddTask(text));
   };
 
@@ -141,6 +159,18 @@ const Home: React.FC<S> = () => {
       dispatch(setodoData(sorting_generic(todoData, 'title', mode)));
       dispatch(setsortingmode('asc'));
     }
+  };
+
+  const deleteListdata = (idTodeleted: any) => {
+    const newDeletedData = todoData.filter(
+      (item: any) => item.id !== idTodeleted,
+    );
+    dispatch(setodoData(newDeletedData));
+  };
+
+  const editListData = (item: any) => {
+    dispatch(setModal(!showModal));
+    dispatch(setAddTask(item));
   };
 
   return (
@@ -254,21 +284,33 @@ const Home: React.FC<S> = () => {
 
           <ScrollView style={{}}>
             <TouchableOpacity
-              style={{backgroundColor: mode == 'asc' ? 'red' : 'green'}}
+              style={{
+                backgroundColor: mode == 'asc' ? '#99BC85' : '#C7C8CC',
+                margin: verticalScale(20),
+                position: 'relative',
+                zIndex: 11,
+              }}
               onPress={sortingdata}>
-              <Text style={styles.dailyTxt}>name</Text>
+              <Text style={styles.dailyTxt}> Name {mode}</Text>
             </TouchableOpacity>
 
             {todoData.length > 0 &&
               todoData?.map((item: any, Index: any) => (
-                <View key={item.id}>
+                <View key={item.id} style={styles.dailyTaskView}>
                   <Text
                     style={[
                       globalStyles.subtxt,
                       {alignSelf: 'flex-start', paddingLeft: 20},
                     ]}>
+                    {/* {item?.id} */}
                     {item?.title}
                   </Text>
+                  <TouchableOpacity onPress={() => editListData(item)}>
+                    <Text>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => deleteListdata(item.id)}>
+                    <Image source={deleteIcon} style={styles.deleteIcon} />
+                  </TouchableOpacity>
                 </View>
               ))}
           </ScrollView>
