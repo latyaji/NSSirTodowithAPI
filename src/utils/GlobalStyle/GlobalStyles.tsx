@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Fonts} from '../FontFamily/FontFamily';
 import {scale, verticalScale} from 'react-native-size-matters';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { Colors } from '../Colors/Color';
 
 export const globalStyles = StyleSheet.create({
   headingtxt: {
@@ -15,9 +15,35 @@ export const globalStyles = StyleSheet.create({
     fontFamily: Fonts.PoppinsMedium,
     alignSelf: 'center'
   },
-  shapeimg:{width:"68%",height:"100%"},
-  shapContainer:{position:"absolute",height:300,width:"100%"},
+  shapeimg:{width:"60%",height:"80%"},
+  shapContainer:{position:"absolute",height:340,width:"100%"},
   shortImg:{ width: scale(200),
     height: verticalScale(180),
-    resizeMode: 'contain',}
+    resizeMode: 'contain'},
+    iconImg:{
+      width:'12%',
+      height:30,
+      resizeMode:"contain"
+    },
+    container:{
+      flex:1,
+    },
+    toastContainer:{
+      maxWidth: '95%',
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      backgroundColor: '#fff',
+      marginVertical: 4,
+      borderRadius: 8,
+      borderLeftColor: '#00C851',
+      borderLeftWidth: 6,
+      justifyContent: 'center',
+      paddingLeft: 16,
+    },
+    toastContainertxt: {
+      fontSize: 14,
+      color: '#333',
+      fontWeight: 'bold',
+    },
+    toastContainermsgtxt:{color: '#a3a3a3', marginTop: 2}
 });

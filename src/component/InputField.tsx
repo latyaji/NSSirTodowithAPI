@@ -8,28 +8,29 @@ interface inputprops {
   placeholder: string;
   value?: string;
   error?: string;
-  onChangeText?: (text: string) => void
+  onChangeText?: (text: string) => void;
+  containerStyle?: any;
 }
 
 const InputField = ({
   placeholder,
   value,
   onChangeText,
-  error
+  error,
+  containerStyle,
 }: inputprops) => {
   return (
     <>
-    <View style={styles.txtInputContainer}>
-      <TextInput
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        style={styles.textInput}
-      />
+      <View style={[styles.txtInputContainer, containerStyle]}>
+        <TextInput
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
+          style={styles.textInput}
+        />
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </>
-    
   );
 };
 
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Colors.red, // Customize the color for error messages
-    paddingLeft:scale(20)
-   
+    paddingLeft: scale(20),
   },
 });

@@ -1,30 +1,37 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {moderateScale, scale, verticalScale} from 'react-native-size-matters';
+import {scale, verticalScale} from 'react-native-size-matters';
 import {Colors} from '../utils/Colors/Color';
 import {Fonts} from '../utils/FontFamily/FontFamily';
 
 export interface buttonprops {
-  onPress: () => void;
+  onPress?: () => void;
   tittle: string;
+  isDisable?: boolean;
 }
 
-const Button = ({onPress, tittle}: buttonprops) => {
+const PrimaryButton = ({onPress, tittle, isDisable}: buttonprops) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.buttonMainContainer}>
+    <TouchableOpacity
+      disabled={isDisable}
+      onPress={onPress}
+      style={[
+        styles.buttonMainContainer,
+        isDisable && {backgroundColor: Colors.darkgrey},
+      ]}>
       <Text style={styles.btnTxt}>{tittle}</Text>
     </TouchableOpacity>
   );
 };
-export default Button;
+export default PrimaryButton;
 
 const styles = StyleSheet.create({
   buttonMainContainer: {
+    width: '100%',
     backgroundColor: Colors.orange,
-    paddingHorizontal: scale(100),
     paddingVertical: verticalScale(10),
-    //borderRadius: moderateScale(17),
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 8,
   },
   btnTxt: {
     fontFamily: Fonts.PoppinsMedium,

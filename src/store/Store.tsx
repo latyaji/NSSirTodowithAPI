@@ -1,13 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit'
 import SignupSlice from "./Slice/SignupSlice"
+import LoginSlice from './Slice/LoginSlice'
+import LoaderSlice from './Slice/LoaderSlice'
+import ProfileImage from './Slice/ProfileImageSlice'
 
 export const store = configureStore({
   reducer: {
-    counter:SignupSlice
+    counter:SignupSlice,
+    loginstore:LoginSlice,
+    loaderSlice: LoaderSlice,
+    ProfileImage:ProfileImage
   },
 })
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch

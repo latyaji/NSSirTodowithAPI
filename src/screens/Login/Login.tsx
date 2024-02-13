@@ -1,48 +1,92 @@
-import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   Alert,
-  ScrollView,
   Image,
   SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {Static} from '../../utils/StaticFonts/StaticFonts';
-import {Button, InputField} from '../../component/Index';
-import {globalStyles} from '../../utils/GlobalStyle/GlobalStyles';
-import {scale, verticalScale} from 'react-native-size-matters';
-import {Colors} from '../../utils/Colors/Color';
-import {Fonts} from '../../utils/FontFamily/FontFamily';
-import {NavigationParams} from 'react-navigation';
-import {loginimg, shape} from '../../utils/Images/assest';
-import { useSelector } from 'react-redux';
+import { scale, verticalScale } from 'react-native-size-matters';
+import { NavigationParams } from 'react-navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import publicinstance from '../../API_INTERCEPTOR/axios-interceptors';
+import { checkFields, isValid } from '../../GlobalFunction/ValidationFunction';
+import { InputField, PrimaryButton } from '../../component/Index';
+import { setIsLoading } from '../../store/Slice/LoaderSlice';
+import {
+  setError,
+  setIsLoggedIn,
+  setLoginData,
+} from '../../store/Slice/LoginSlice';
+import { Colors } from '../../utils/Colors/Color';
+import { Fonts } from '../../utils/FontFamily/FontFamily';
+import { globalStyles } from '../../utils/GlobalStyle/GlobalStyles';
+import { loginimg, shape } from '../../utils/Images/assest';
+import { Static } from '../../utils/StaticFonts/StaticFonts';
 
 const Login = ({navigation}: NavigationParams) => {
-  const [data, setData] = useState({
-    email: {value: '', error: ''},
-    password: {value: '', error: ''},
-  });
-  const signupData = useSelector(store => store)
-  console.log("signupdata@@@",signupData)
+  const {email, password, data} = useSelector((state: any) => state.loginstore);
+  const dispatch = useDispatch();
+
   const onChangeHandler = (name: string, value: string) => {
-    setData({...data, [name]: {value, error: isValid(name, value)}});
+    dispatch(
+      setLoginData({
+        key: name,
+        value: {value: value, error: isValid(name, value)},
+      }),
+    );
   };
-  const submitHandler = () => {
-    const checkFieldsError = checkFields(data);
-    setData({...checkFieldsError.InputFields});
-    if (!checkFieldsError.isError) {
-      Alert.alert('Login successful');
-    } else {
-      Alert.alert('Invalid credentials');
+
+  const submitHandler = async () => {
+    try {
+      let body = {
+        email: email.value,
+        password: password.value,
+      };
+      dispatch(setIsLoading(true));
+      const {data} = await publicinstance.post(
+        'auth/login',
+        body,
+      );
+      dispatch(setIsLoading(false));
+
+      if (data?.data?.accessToken) {
+        AsyncStorage.setItem('TOKEN', data.data.accessToken);
+        AsyncStorage.setItem(
+          'SIGNUPUSERDATA',
+          JSON.stringify(data.data.userData),
+        );
+        dispatch(
+          setIsLoggedIn({
+            userData: data.data.userData,
+            accessToken: data.data.accessToken,
+          }),
+        );
+      } else {
+        dispatch(
+          setError({
+            isError: data.message,
+          }),
+        );
+        Alert.alert('ERROR:', data.message);
+        dispatch(setIsLoading(false));
+      }
+    } catch (e) {
+      dispatch(setIsLoading(false));
+      console.log('errror---->', e);
     }
   };
+
   return (
     <SafeAreaView style={styles.conatiner}>
       <View style={globalStyles.shapContainer}>
         <Image source={shape} style={globalStyles.shapeimg}></Image>
       </View>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="always">
         <View style={styles.topConatiner}>
           <Text style={globalStyles.headingtxt}>{Static.loginpwelcometxt}</Text>
           <Text style={globalStyles.subtxt}>{Static.signupwelcomesubtxt}</Text>
@@ -55,26 +99,36 @@ const Login = ({navigation}: NavigationParams) => {
           <InputField
             placeholder="Enter your email"
             onChangeText={text => onChangeHandler('email', text)}
-            error={data.email.error}
-            value={data.email.value}
+            error={email.error}
+            value={email.value}
           />
           <InputField
             placeholder="Confrom password"
             onChangeText={text => onChangeHandler('password', text)}
-            error={data.password.error}
-            value={data.password.value}
+            error={password.error}
+            value={password.value}
           />
         </View>
         <View style={styles.bottomConatiner}>
-          <Button tittle="Login" onPress={() => submitHandler()} />
+          <PrimaryButton
+            isDisable={
+              checkFields({
+                email,
+                password,
+              }).isError
+            }
+            tittle="Login"
+            onPress={() => submitHandler()}
+          />
           <Text
             style={[globalStyles.subtxt, {paddingVertical: verticalScale(12)}]}>
             Don’t have an account ?{' '}
-            <Text
-              style={{color: Colors.mahroom, fontFamily: Fonts.PoppinsBold}}
-              onPress={() => submitHandler()}>
-              Sign Up
-            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+              <Text
+                style={{color: Colors.mahroom, fontFamily: Fonts.PoppinsBold}}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
           </Text>
         </View>
       </ScrollView>
@@ -82,36 +136,6 @@ const Login = ({navigation}: NavigationParams) => {
   );
 };
 
-const isValid = (name: string, value: string) => {
-  if (!value) {
-    return `${name} is required`;
-  } else if (name == 'email') {
-    const pattern = /^[a-z0-9.]{1,64}@[a-z0-9.]{1,64}$/;
-    return !pattern.test(value) ? `${name} must be valid` : null;
-  } else if (name == 'password') {
-    return value.length <= 4 ? `${name} length must be greater than 4` : null;
-  } else {
-    return null;
-  }
-};
-// validation function for multiple fields
-export const checkFields = InputFields => {
-  let isError = false;
-  for (const field in InputFields) {
-    InputFields = {
-      ...InputFields,
-      [field]: {
-        value: InputFields[field].value,
-        err: isValid(field, InputFields[field].value),
-      },
-    };
-
-    if (InputFields[field].err) {
-      isError = true;
-    }
-  }
-  return {isError, InputFields};
-};
 
 export default Login;
 

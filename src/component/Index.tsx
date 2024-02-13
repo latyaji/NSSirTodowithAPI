@@ -1,7 +1,9 @@
-import Button from "./Button";
+import PrimaryButton from "./PrimaryButton";
 import InputField from "./InputField";
+import Loader from "./Loader"
 
 export {
-    Button,
-    InputField
+    PrimaryButton,
+    InputField,
+    Loader
 }

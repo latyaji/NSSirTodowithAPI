@@ -6,5 +6,8 @@ export const Static = {
     signupwelcomesubtxt:"Let’s help you meet your tasks",
     alreadyHaveaccount:"Already have an account",
     signIn:"Sign In",
-    loginpwelcometxt:"Welcome back!"
+    loginpwelcometxt:"Welcome back!",
+    tasklist:"Tasks List",
+    dailtTask:"Daily Tasks",
+    welcome:"Welcome"
 }
