@@ -34,3 +34,44 @@ const App = () => {
 export default App;
 
 
+
+// import { View, Text, TextInput, Button } from 'react-native';
+// import React, { useState } from 'react';
+
+// const App = () => {
+//   const [title, setTitle] = useState('');
+//   const [todoList, setTodoList] = useState([]);
+
+//   const submitTodo = () => {
+//     // Check if title is not empty
+//     if (title.trim() !== '') {
+//       // Add the new todo to the todoList
+//       setTodoList([...todoList, { title: title }]);
+//       // Clear the title input after submission
+//       setTitle('');
+//     }
+//   };
+//   console.log("todoList---",todoList)
+
+//   return (
+//     <View>
+//       <Text>App</Text>
+//       <TextInput
+//         placeholder="Enter Title"
+//         onChangeText={text => setTitle(text)}
+//         value={title} // bind value to title state
+//         style={{ borderWidth: 1 }}
+//       />
+//       <Button
+//         onPress={submitTodo}
+//         title='Submit'
+//       />
+//       {/* Display the todo list */}
+//       {todoList.map((todo, index) => (
+//         <Text key={index}>{todo.title}</Text>
+//       ))}
+//     </View>
+//   );
+// };
+
+// export default App;

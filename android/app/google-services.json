@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032395629668",
+    "project_id": "todoapp-afd99",
+    "storage_bucket": "todoapp-afd99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032395629668:android:f6ceb178ca88a8a6556b71",
+        "android_client_info": {
+          "package_name": "com.nslearningapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl0bn5iwXP7phBwhzLcCqkJC3mqprWS1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

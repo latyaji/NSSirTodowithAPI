@@ -1,35 +1,35 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import firestore from '@react-native-firebase/firestore';
+import React, { useEffect } from 'react';
 import {
   Alert,
   Image,
   SafeAreaView,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import { scale, verticalScale } from 'react-native-size-matters';
+import { verticalScale } from 'react-native-size-matters';
 import { NavigationParams } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import publicinstance from '../../API_INTERCEPTOR/axios-interceptors';
 import { checkFields, isValid } from '../../GlobalFunction/ValidationFunction';
 import { InputField, PrimaryButton } from '../../component/Index';
-import { setIsLoading } from '../../store/Slice/LoaderSlice';
-import {
-  setError,
-  setIsLoggedIn,
-  setLoginData,
-} from '../../store/Slice/LoginSlice';
+import { setLoginData, setoken } from '../../store/Slice/LoginSlice';
 import { Colors } from '../../utils/Colors/Color';
 import { Fonts } from '../../utils/FontFamily/FontFamily';
 import { globalStyles } from '../../utils/GlobalStyle/GlobalStyles';
 import { loginimg, shape } from '../../utils/Images/assest';
 import { Static } from '../../utils/StaticFonts/StaticFonts';
+import { styles } from './LoginStyles';
+
+import auth from '@react-native-firebase/auth';
+import { setProfileUserData } from '../../store/Slice/ProfileImageSlice';
 
 const Login = ({navigation}: NavigationParams) => {
-  const {email, password, data} = useSelector((state: any) => state.loginstore);
+  const {email, password, token, userDataById} = useSelector(
+    (state: any) => state.loginstore,
+  );
   const dispatch = useDispatch();
 
   const onChangeHandler = (name: string, value: string) => {
@@ -41,46 +41,53 @@ const Login = ({navigation}: NavigationParams) => {
     );
   };
 
-  const submitHandler = async () => {
+  const getfbtoken = async () => {
     try {
-      let body = {
-        email: email.value,
-        password: password.value,
-      };
-      dispatch(setIsLoading(true));
-      const {data} = await publicinstance.post(
-        'auth/login',
-        body,
-      );
-      dispatch(setIsLoading(false));
+      const tokenget = await AsyncStorage.getItem('TOKEN');
+      dispatch(setoken(tokenget));
+    } catch (err) {
+      console.log('error=====>>', err);
+    }
+  };
+  useEffect(() => {
+    getfbtoken;
+    signupDatagetfromfirebase(userDataById);
+  }, []);
 
-      if (data?.data?.accessToken) {
-        AsyncStorage.setItem('TOKEN', data.data.accessToken);
-        AsyncStorage.setItem(
-          'SIGNUPUSERDATA',
-          JSON.stringify(data.data.userData),
-        );
-        dispatch(
-          setIsLoggedIn({
-            userData: data.data.userData,
-            accessToken: data.data.accessToken,
-          }),
-        );
-      } else {
-        dispatch(
-          setError({
-            isError: data.message,
-          }),
-        );
-        Alert.alert('ERROR:', data.message);
-        dispatch(setIsLoading(false));
-      }
-    } catch (e) {
-      dispatch(setIsLoading(false));
-      console.log('errror---->', e);
+  const signupDatagetfromfirebase = async (userDataById: any) => {
+    console.log('userDataById loginnnn', userDataById);
+    try {
+      await firestore()
+        .collection('TodoTaskSignupData')
+        .doc(userDataById)
+        .get()
+        .then(data => {
+          dispatch(setProfileUserData(data.data()));
+        });
+    } catch (error) {
+      console.log('error', error);
     }
   };
 
+  const loginWithFirebase = async () => {
+    try {
+      const userCredential = await auth().signInWithEmailAndPassword(
+        email.value,
+        password.value,
+      );
+
+      const token = await userCredential.user.getIdToken();
+      await AsyncStorage.setItem('TOKEN', token);
+      dispatch(setoken(token));
+
+      navigation.navigate('Home');
+    } catch (error: any) {
+      if (error.code === 'auth/operation-not-allowed') {
+        Alert.alert('Enable anonymous in your firebase console.');
+      }
+      Alert.alert('Error', 'invalid-credential');
+    }
+  };
   return (
     <SafeAreaView style={styles.conatiner}>
       <View style={globalStyles.shapContainer}>
@@ -118,7 +125,7 @@ const Login = ({navigation}: NavigationParams) => {
               }).isError
             }
             tittle="Login"
-            onPress={() => submitHandler()}
+            onPress={() => loginWithFirebase()}
           />
           <Text
             style={[globalStyles.subtxt, {paddingVertical: verticalScale(12)}]}>
@@ -136,31 +143,6 @@ const Login = ({navigation}: NavigationParams) => {
   );
 };
 
-
 export default Login;
 
-const styles = StyleSheet.create({
-  conatiner: {
-    flex: 1,
-  },
-  topConatiner: {
-    //flex: 1,
-    justifyContent: 'flex-end',
-    alignSelf: 'center',
-    marginTop: verticalScale(90),
-  },
-  middleConatiner: {
-    marginTop: verticalScale(30),
-    marginVertical: verticalScale(20),
-    gap: verticalScale(20),
-    width: '88%',
-    alignItems: 'center',
 
-    marginLeft: scale(20),
-  },
-  bottomConatiner: {
-    //flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

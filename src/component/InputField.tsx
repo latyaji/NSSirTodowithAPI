@@ -24,7 +24,7 @@ const InputField = ({
       <View style={[styles.txtInputContainer, containerStyle]}>
         <TextInput
           placeholder={placeholder}
-          value={value}
+          defaultValue={value}
           onChangeText={onChangeText}
           style={styles.textInput}
         />

@@ -97,5 +97,22 @@ export const styles = StyleSheet.create({
       flexDirection:"row",
       justifyContent:"space-between",
       padding:verticalScale(20)
+    },
+    plusIcontodo:{
+      width: 30,
+      height: 30,
+      resizeMode: 'contain',
+      marginTop: 10,
+    },
+    cardModalView:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      margin: 6,
+    },
+    addtaskView:{
+      flexDirection: 'row',
+      width: '90%',
+      justifyContent: 'space-between',
+      marginTop: 20,
     }
   });

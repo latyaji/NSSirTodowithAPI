@@ -7,6 +7,7 @@ interface ProfileImageData {
   showModal: boolean;
   addTasks: string;
   todoData: any;
+  profileUserData:any;
   mode:string;
 }
 
@@ -15,8 +16,9 @@ const initialState: ProfileImageData = {
   height: 120,
   showModal: false,
   addTasks: '',
-  todoData: [''],
-  mode:"asc"
+  todoData: [],
+  mode:"asc",
+  profileUserData:{}
 };
 
 export const ProfileImageSlice = createSlice({
@@ -37,13 +39,16 @@ export const ProfileImageSlice = createSlice({
      
       state.todoData = payload;
     },
-  
+    setProfileUserData(state,{payload}){
+      state.profileUserData = payload;
+      
+    },
     setsortingmode(state, {payload}) {
       state.mode = payload;
     },
   },
 });
 
-export const {setSelectedImages, setModal, setAddTask, setodoData,setsortingmode} =
+export const {setSelectedImages, setModal, setAddTask, setodoData,setsortingmode,setProfileUserData} =
   ProfileImageSlice.actions;
 export default ProfileImageSlice.reducer;
