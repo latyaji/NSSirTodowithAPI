@@ -33,6 +33,7 @@ import {styles} from './HomeStyles';
 import getAuth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {NavigationParams} from 'react-navigation';
+import {setIsLoading} from '../../store/Slice/LoaderSlice';
 
 const auth = getAuth();
 
@@ -46,19 +47,15 @@ const Home = ({navigation}: NavigationParams) => {
   const dispatch = useDispatch();
   const {width, height, showModal, addTasks, todoData, profileUserData}: any =
     useSelector<any>(s => s.ProfileImage);
+  const {userDataById}: any = useSelector<any>(s => s.loaderSlice);
 
   useEffect(() => {
-    if (auth.currentUser?.uid) {
       getToDoDataWithFirebase();
-    }
-  }, [auth.currentUser?.uid]);
+  }, [profileUserData]);
 
-  // useEffect(() => {
-  //   getToDoDataWithFirebase();
-  // }, []);
+ 
 
-  const toastmsg = (showmsg:string,titlestatus:string) => {
-   
+  const toastmsg = (showmsg: string, titlestatus: string) => {
     toast.show(showmsg, {
       type: 'custom_toast',
       animationDuration: 1000,
@@ -92,7 +89,6 @@ const Home = ({navigation}: NavigationParams) => {
   const logoutwithfirebase = async () => {
     try {
       const logoutt = await AsyncStorage.removeItem('TOKEN');
-      // console.log("logoutt-----",token)
     } catch (error) {
       console.log('error logouttt', error);
     }
@@ -107,8 +103,8 @@ const Home = ({navigation}: NavigationParams) => {
         .doc(auth.currentUser?.uid)
         .set({
           Title: updatedTodoList,
-        })
-        toastmsg("To Do Added Successfully","To Do Status")
+        });
+      toastmsg('To Do Added Successfully', 'To Do Status');
 
       dispatch(setodoData(updatedTodoList));
       dispatch(setAddTask(''));
@@ -122,9 +118,10 @@ const Home = ({navigation}: NavigationParams) => {
     try {
       const data: any = await firestore()
         .collection('ToDoList')
-        .doc(auth.currentUser?.uid)
+        .doc(profileUserData.uid)
         .get();
-      data.data().Title && dispatch(setodoData(data.data().Title));
+        console.log("====>", data.data())
+       dispatch(setodoData(data?.data()?.Title||[]));
       // dispatch(setodoData(data.data().Title || []));
     } catch (error) {
       console.log('Todo list getting error', error);
@@ -133,13 +130,16 @@ const Home = ({navigation}: NavigationParams) => {
 
   const updatedTodoListwithFB = async (useritemid: string) => {
     dispatch(setModal(!showModal));
+    // console.log("useritemid ----------",useritemid)
 
-    // const updatedtodolist = todoData.filter((item)=>
-    // if(item.id == useritemid){
-
-    // }
-
-    // )
+    const updatedtodolist = todoData.map((item:string)=>
+   {
+    if(item.id === useritemid) {
+      dispatch(setAddTask(text));
+    }
+   }
+    
+    )
 
     // try {
     //   const updatedData = await firestore()
@@ -211,7 +211,7 @@ const Home = ({navigation}: NavigationParams) => {
         .set({
           Title: deletedataByID,
         });
-        toastmsg("To Do deleted Successfully","To Do deleted Status")
+      toastmsg('To Do deleted Successfully', 'To Do deleted Status');
     } catch (error) {
       console.log('error delete todo data---', error);
     }

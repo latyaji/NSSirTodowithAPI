@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   Alert,
   Image,
@@ -8,23 +8,24 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { verticalScale } from 'react-native-size-matters';
-import { NavigationParams } from 'react-navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { checkFields, isValid } from '../../GlobalFunction/ValidationFunction';
-import { InputField, PrimaryButton } from '../../component/Index';
-import { setLoginData, setoken } from '../../store/Slice/LoginSlice';
-import { Colors } from '../../utils/Colors/Color';
-import { Fonts } from '../../utils/FontFamily/FontFamily';
-import { globalStyles } from '../../utils/GlobalStyle/GlobalStyles';
-import { loginimg, shape } from '../../utils/Images/assest';
-import { Static } from '../../utils/StaticFonts/StaticFonts';
-import { styles } from './LoginStyles';
+import {verticalScale} from 'react-native-size-matters';
+import {NavigationParams} from 'react-navigation';
+import {useDispatch, useSelector} from 'react-redux';
+import {checkFields, isValid} from '../../GlobalFunction/ValidationFunction';
+import {InputField, PrimaryButton} from '../../component/Index';
+import {setLoginData, setoken} from '../../store/Slice/LoginSlice';
+import {Colors} from '../../utils/Colors/Color';
+import {Fonts} from '../../utils/FontFamily/FontFamily';
+import {globalStyles} from '../../utils/GlobalStyle/GlobalStyles';
+import {loginimg, shape} from '../../utils/Images/assest';
+import {Static} from '../../utils/StaticFonts/StaticFonts';
+import {styles} from './LoginStyles';
 
 import auth from '@react-native-firebase/auth';
-import { setProfileUserData } from '../../store/Slice/ProfileImageSlice';
+import {setProfileUserData} from '../../store/Slice/ProfileImageSlice';
+import {setIsLoading} from '../../store/Slice/LoaderSlice';
 
 const Login = ({navigation}: NavigationParams) => {
   const {email, password, token, userDataById} = useSelector(
@@ -41,47 +42,39 @@ const Login = ({navigation}: NavigationParams) => {
     );
   };
 
-  const getfbtoken = async () => {
-    try {
-      const tokenget = await AsyncStorage.getItem('TOKEN');
-      dispatch(setoken(tokenget));
-    } catch (err) {
-      console.log('error=====>>', err);
-    }
-  };
-  useEffect(() => {
-    getfbtoken;
-    signupDatagetfromfirebase(userDataById);
-  }, []);
-
   const signupDatagetfromfirebase = async (userDataById: any) => {
-    console.log('userDataById loginnnn', userDataById);
     try {
-      await firestore()
+      dispatch(setIsLoading(true));
+      firestore()
         .collection('TodoTaskSignupData')
         .doc(userDataById)
         .get()
         .then(data => {
+          console.log(data.data());
+          dispatch(setIsLoading(false));
           dispatch(setProfileUserData(data.data()));
         });
     } catch (error) {
+      dispatch(setIsLoading(false));
       console.log('error', error);
     }
   };
 
   const loginWithFirebase = async () => {
     try {
+      dispatch(setIsLoading(true));
       const userCredential = await auth().signInWithEmailAndPassword(
         email.value,
         password.value,
       );
-
-      const token = await userCredential.user.getIdToken();
+      dispatch(setIsLoading(false));
+      const token = userCredential.user.uid;
+      signupDatagetfromfirebase(token);
       await AsyncStorage.setItem('TOKEN', token);
       dispatch(setoken(token));
-
       navigation.navigate('Home');
     } catch (error: any) {
+      dispatch(setIsLoading(false));
       if (error.code === 'auth/operation-not-allowed') {
         Alert.alert('Enable anonymous in your firebase console.');
       }
@@ -144,5 +137,3 @@ const Login = ({navigation}: NavigationParams) => {
 };
 
 export default Login;
-
-

@@ -7,31 +7,28 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { verticalScale } from 'react-native-size-matters';
-import { useDispatch, useSelector } from 'react-redux';
-import { checkFields, isValid } from '../../GlobalFunction/ValidationFunction';
-import { InputField, PrimaryButton } from '../../component/Index';
-import { setuserDataById } from '../../store/Slice/LoginSlice';
-import { setSignupData } from '../../store/Slice/SignupSlice';
-import { Colors } from '../../utils/Colors/Color';
-import { Fonts } from '../../utils/FontFamily/FontFamily';
-import { globalStyles } from '../../utils/GlobalStyle/GlobalStyles';
-import { shape } from '../../utils/Images/assest';
-import { Static } from '../../utils/StaticFonts/StaticFonts';
-import { styles } from './SignupStyles';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {verticalScale} from 'react-native-size-matters';
+import {useDispatch, useSelector} from 'react-redux';
+import {checkFields, isValid} from '../../GlobalFunction/ValidationFunction';
+import {InputField, PrimaryButton} from '../../component/Index';
+import {setuserDataById} from '../../store/Slice/LoginSlice';
+import {setSignupData} from '../../store/Slice/SignupSlice';
+import {Colors} from '../../utils/Colors/Color';
+import {Fonts} from '../../utils/FontFamily/FontFamily';
+import {globalStyles} from '../../utils/GlobalStyle/GlobalStyles';
+import {shape} from '../../utils/Images/assest';
+import {Static} from '../../utils/StaticFonts/StaticFonts';
+import {styles} from './SignupStyles';
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import {setIsLoading} from '../../store/Slice/LoaderSlice';
 
 const Signup = ({navigation}: any) => {
-  const {name, email, password, data} = useSelector(
-    (state: any) => state.counter,
-  );
+  const {name, email, password} = useSelector((state: any) => state.counter);
 
   const dispatch = useDispatch();
-
- 
 
   const onChangeHandler = (name: string, value: any) => {
     dispatch(
@@ -42,41 +39,48 @@ const Signup = ({navigation}: any) => {
     );
   };
 
-  const adddta = async (id:string) => {
+  const adddta = async (currentUserId: string) => {
     try {
+      dispatch(setIsLoading(true));
       const adddnewata = await firestore();
       firestore()
         .collection('TodoTaskSignupData')
-        .doc(id)
+        .doc(currentUserId)
         .set({
           name: name.value,
           email: email.value,
           password: password.value,
+          uid: currentUserId,
         })
-        .then((data) => {
-          dispatch(setuserDataById(id))
+        .then(data => {
+          dispatch(setIsLoading(false));
+          dispatch(setuserDataById(currentUserId));
           Alert.alert('SignUp Successfully');
           navigation.navigate('Login');
         });
     } catch (err) {
+      dispatch(setIsLoading(false));
       console.log(err);
     }
   };
 
   const SignupwithEmailPasswordAuth = () => {
+    dispatch(setIsLoading(true));
     auth()
       .createUserWithEmailAndPassword(email.value, password.value)
-      .then((data) => {
-        // console.log("idddd@@@@",data.user.uid)
+      .then(data => {
+        dispatch(setIsLoading(false));
         adddta(data.user.uid);
-        
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
+          dispatch(setIsLoading(false));
           Alert.alert('That email address is already in use!');
         }
 
         if (error.code === 'auth/invalid-email') {
+          dispatch(setIsLoading(false));
+
           Alert.alert('That email address is invalid!');
         }
 
