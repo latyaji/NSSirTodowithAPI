@@ -166,32 +166,43 @@
 
 // duplicated element by array
 
-let arr = [1,2,2,3,4,5,1]
-// let duplicated = arr.filter((item,index,arr)=>arr.indexOf(item) !== index)
-// duplicated = arr
-// console.log("duplcated=====?>>>",arr)
+// let arr = [1,2,2,3,4,5,1]
+// // let duplicated = arr.filter((item,index,arr)=>arr.indexOf(item) !== index)
+// // duplicated = arr
+// // console.log("duplcated=====?>>>",arr)
 
-let duplicatedValue = []
-let count = 0
+// let duplicatedValue = []
+// let count = 0
 
 
 
-const duplicatedValuefunc = () => {
-    for(let i = 0 ; i < arr.length ; i++){
-        for(let j = i+1 ; j < arr.length ; j++){
-            if(arr[i] == arr[j]){
-                count++
-                duplicatedValue.push(arr[i])
-                // console.log(arr[j])
-                // break;
-            }
+// const duplicatedValuefunc = () => {
+//     for(let i = 0 ; i < arr.length ; i++){
+//         for(let j = i+1 ; j < arr.length ; j++){
+//             if(arr[i] == arr[j]){
+//                 count++
+//                 duplicatedValue.push(arr[i])
+//             }
            
                 
             
-        }
-    }
-    console.log("countttt@@",count)
-}
+//         }
+//     }
+//     console.log("countttt@@",count)
+// }
 
-const t1 =  duplicatedValuefunc()
- console.log("duplicatedValue@@@",duplicatedValue)
+// const t1 =  duplicatedValuefunc()
+//  console.log("duplicatedValue@@@",duplicatedValue)
+
+
+
+// updated array value
+
+let arr = ['shivani','sapna','meena','sonu','nilesh']
+
+let checkindex = arr.indexOf('meena')
+if(checkindex > -1)
+{
+    arr[checkindex]  = 'updated meena'
+}
+console.log("arr---",arr)

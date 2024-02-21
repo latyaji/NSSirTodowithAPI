@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import React, {useEffect} from 'react';
 import {
   Alert,
@@ -81,6 +81,16 @@ const Login = ({navigation}: NavigationParams) => {
       Alert.alert('Error', 'invalid-credential');
     }
   };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log("auth state changed");
+      console.log("uuuuuuu-------->>>",user);
+    });    
+}, []);
+
+
+
   return (
     <SafeAreaView style={styles.conatiner}>
       <View style={globalStyles.shapContainer}>

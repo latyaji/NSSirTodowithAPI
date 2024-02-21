@@ -267,6 +267,9 @@ const Home = ({navigation}: NavigationParams) => {
 
       <View style={{flex: 1.5}}>
         <Text style={styles.taskTxt}>{Static.tasklist}</Text>
+        <TouchableOpacity onPress={()=>navigation.navigate('DashBoard')}>
+          <Text>Go to DashBoard screen</Text>
+        </TouchableOpacity>
         <View style={styles.card}>
           <View style={styles.cardModalView}>
             <Text style={styles.dailyTxt}>{Static.dailtTask}</Text>
